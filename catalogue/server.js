@@ -7,6 +7,10 @@ instana({
     }
 });
 
+const { OpenFeature } = require('@openfeature/server-sdk');
+const { FlagdProvider } = require('@openfeature/flagd-provider');
+const flagProvider = new FlagdProvider();
+
 const mongoClient = require('mongodb').MongoClient;
 const mongoObjectID = require('mongodb').ObjectID;
 const bodyParser = require('body-parser');
@@ -103,7 +107,16 @@ app.get('/product/:sku', (req, res) => {
 });
 
 // products in a category
-app.get('/products/:cat', (req, res) => {
+app.get('/products/:cat', async (req, res) => {
+    await OpenFeature.setProviderAndWait(flagProvider);
+    const booleanVariant = await OpenFeature.getClient().getBooleanValue("productCatalogFailure", false);
+
+    console.log('booleanVariant = %s', booleanVariant);
+    if(booleanVariant) {
+        res.status(500).send('Failing in progress');
+        req.log.error('Internal server error');
+        return;
+    }
     if(mongoConnected) {
         collection.find({ categories: req.params.cat }).sort({ name: 1 }).toArray().then((products) => {
             if(products) {
