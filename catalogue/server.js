@@ -110,8 +110,6 @@ app.get('/product/:sku', (req, res) => {
 app.get('/products/:cat', async (req, res) => {
     await OpenFeature.setProviderAndWait(flagProvider);
     const booleanVariant = await OpenFeature.getClient().getBooleanValue("productCatalogFailure", false);
-
-    console.log('booleanVariant = %s', booleanVariant);
     if(booleanVariant) {
         res.status(500).send('Failing in progress');
         req.log.error('Internal server error');
