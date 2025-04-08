@@ -7,6 +7,10 @@ instana({
     }
 });
 
+const { OpenFeature } = require('@openfeature/server-sdk');
+const { FlagdProvider } = require('@openfeature/flagd-provider');
+const flagProvider = new FlagdProvider();
+
 const mongoClient = require('mongodb').MongoClient;
 const mongoObjectID = require('mongodb').ObjectID;
 const redis = require('redis');
@@ -82,7 +86,14 @@ app.get('/uniqueid', (req, res) => {
 });
 
 // check user exists
-app.get('/check/:id', (req, res) => {
+app.get('/check/:id', async (req, res) => {
+    await OpenFeature.setProviderAndWait(flagProvider);
+    const booleanVariant = await OpenFeature.getClient().getBooleanValue("userFailure", false);
+    if(booleanVariant) {
+        res.status(500).send('Failing in progress');
+        req.log.error('Internal server error');
+        return;
+    }
     if(mongoConnected) {
         usersCollection.findOne({name: req.params.id}).then((user) => {
             if(user) {

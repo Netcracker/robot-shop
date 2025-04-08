@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: flagd
+  labels:
+    service: flagd
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8013
+      name: tcp-service
+      targetPort: 8013
+    - port: 4000
+      name: tcp-service-0
+      targetPort: 4000
+  selector:
+    service: flagd
