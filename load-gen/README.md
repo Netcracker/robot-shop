@@ -32,7 +32,7 @@ robotshop/rs-load
 
 Set the following environment variables to configure the load:
 
-* HOST - The target for the load e.g. http://host:8080/
+* HOST - The target for the load e.g. [http://host:8080/](https://github.com/Netcracker/robot-shop/blob/master/load-gen/README.md)
 * NUM_CLIENTS - How many simultaneous load scripts to run, the bigger the number the bigger the load. The default is 1
 * RUN_TIME - For NUM_CLIENTS greater than 1 the duration to run. If not set, load is run for ever with NUM_CLIENTS. See below.
 * ERROR - Set this to 1 to have erroroneous calls made to the payment service.
